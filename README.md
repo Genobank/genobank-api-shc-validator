@@ -1,0 +1,1 @@
+# genobank-api-shc-validator
