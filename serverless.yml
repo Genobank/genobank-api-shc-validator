@@ -1,0 +1,39 @@
+service: genobank-api-shc-validator
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-east-1
+  environment:
+    APP_ENV: ${file(./.serverless-env/${opt:stage, self:provider.stage, 'test'}.json):APP_ENV}
+    APP_SECRET: ${file(./.serverless-env/${opt:stage, self:provider.stage, 'test'}.json):APP_SECRET}
+
+plugins:
+- serverless-domain-manager
+
+custom:
+  customDomain:
+    domainName: ${file(./.serverless-env/${opt:stage, self:provider.stage, 'test'}.json):DOMAIN}
+    basePath: ""
+    stage: ${self:provider.stage}
+    createRoute53Record: false # hosted elsewhere
+    certificateName: "genobank.io"
+    autoDomain: true
+    apiType: rest
+    endpointType: 'regional'
+
+functions:
+  # Start Ethereum gateway.
+  rest:
+    handler: dist/scripts/start-rest-lambda.handler
+    events:
+    - http:
+        path: '{proxy+}'
+        method: ANY
+        cors:
+          origin: '*'
+    - http:
+        path: '/'
+        method: ANY
+        cors:
+          origin: '*'
+    timeout: 30 # api gateway limit is 30

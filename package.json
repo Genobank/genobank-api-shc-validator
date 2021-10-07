@@ -4,9 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run clear && tsc",
+    "clear": "rm -Rf ./dist",
     "start:rest": "npx ts-node ./src/scripts/start-rest.ts",
-    "start": "npm run start:rest"
+    "start": "npm run start:rest",
+    "test": "npx nyc npx hayspec test",
+    "deploy": "npx sls deploy --aws-profile genobank",
+    "deploy:setup": "npx sls config credentials --provider aws --key $KEY --secret $SECRET --profile genobank",
+    "deploy:remove": "npx sls remove --aws-profile genobank"
   },
   "author": "Tadej Vengust",
   "license": "ISC",
